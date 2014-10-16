@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: Tim Kuhlman
+  description: Applies Monasca schema to influxdb and mysql and creates kafka topics
+  company: HP
+  license: Apache
+  min_ansible_version: 1.7
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  categories:
+  - clustering
+  - system
+dependencies: []

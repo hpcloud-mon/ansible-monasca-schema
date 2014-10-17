@@ -1,0 +1,5 @@
+---
+# create mon db
+#
+# Add users mon_api and mon_persister, though users from variables is probably best
+

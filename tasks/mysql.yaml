@@ -1,0 +1,9 @@
+---
+- name: Copy mysql schema to host
+  copy: dest={{monasca_schema_file}} owner=root group=root mode=640 src=mon.sql
+  register: copy_result
+
+- name: Apply mysql schema to db
+  shell: mysql -u{{mysql_admin}} -p{{mysql_admin_password}} < {{monasca_schema_file}}
+  when: copy_result|changed
+

@@ -1,0 +1,2 @@
+---
+monasca_schema_file: /var/lib/mysql/mon.sql

@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+"""A simple script to setup influxdb user and roles. At some point this should become a more full featured module.
+   Also this assumes that none of the python based influxdb clients are available on this system.
+"""
+
+ADMIN='{{influxdb_admin}}'
+ADMIN_PASS='{{influxdb_admin_password}}'
+DBNAME='{{influxdb_dbname}}'
+USERS={{influxdb_users}}
+URL='http://localhost:8086'
+
+import json
+import sys
+import urllib2
+
+def influxdb_query_names(url):
+    """ Runs a query via an http GET and returns the names in a response as a Python list. """
+    json_value = json.loads(urllib2.urlopen(url).read())
+    if len(json_value) > 0:
+        return [ value for key, value in json_value[0].iteritems() if key == 'name']
+    else:
+        return []
+
+def influxdb_post(url, data):
+    """ Performs a post request against the url with the given data. """
+    req = urllib2.Request(url, json.dumps(data))
+    return urllib2.urlopen(req)
+
+def main(argv=None):
+    auth_str = '?u=%s&p=%s' % (ADMIN, ADMIN_PASS)
+
+    #List current databases
+    dbs = influxdb_query_names(URL + '/db' + auth_str)
+    if DBNAME not in dbs:
+        influxdb_post(URL + '/db' + auth_str, {"name": DBNAME})
+
+    # Create the users
+    users = influxdb_query_names(URL + '/db/' + DBNAME + '/users' + auth_str)
+    for name, password in USERS.iteritems():
+        if name not in users:
+            influxdb_post(unicode(URL + '/db/' + DBNAME + '/users' + auth_str, 'utf-8'), {"name": name, "password": password})
+
+if __name__ == "__main__":
+    sys.exit(main())

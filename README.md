@@ -15,6 +15,9 @@ Optionally for defining topics, define kafka_topics for example
     kafka_topics:
       metrics: { replicas: 1, partitions: 4 }
       events: { replicas: 1, partitions: 4 }
+    influxdb_users:
+      user1: password1
+      user2: password2
 
 ## Future work
 - At this point insecure users/passwords are used for mysql.

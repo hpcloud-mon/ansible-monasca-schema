@@ -11,13 +11,19 @@ URL='http://localhost:8086'
 
 import json
 import sys
+import time
 import urllib2
 
 def influxdb_query_names(url):
     """ Runs a query via an http GET and returns the names in a response as a Python list. """
-    json_value = json.loads(urllib2.urlopen(url).read())
+    try:
+      json_value = json.loads(urllib2.urlopen(url).read())
+    except urllib2.URLError:
+      time.sleep(15)  # Unfortunately influxdb often takes awhile to come up
+      json_value = json.loads(urllib2.urlopen(url).read())
+
     if len(json_value) > 0:
-        return [ value for key, value in json_value[0].iteritems() if key == 'name']
+        return [ item['name'] for item in json_value if item.has_key('name')]
     else:
         return []
 

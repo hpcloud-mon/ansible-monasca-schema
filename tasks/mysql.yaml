@@ -1,6 +1,6 @@
 ---
 - name: Copy mysql schema to host
-  copy: dest={{monasca_schema_file}} owner=root group=root mode=640 src=mon.sql
+  template: dest={{monasca_schema_file}} owner=root group=root mode=640 src=mon.sql.j2
   register: copy_result
 
 - name: Apply mysql schema to db

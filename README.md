@@ -10,17 +10,17 @@ These tags can be used to specify just sections of the role
 ##Requirements
 The monasca services for mysql, influxdb and kafka must be up and running.
 - zookeeper_hosts - comma separated list of host:port pairs.
+- influxdb_users - dictionary of user/password pairs
+- mysql_users - dictionary of user/password pairs
 
 Optionally for defining topics, define kafka_topics for example
     kafka_topics:
       metrics: { replicas: 1, partitions: 4 }
       events: { replicas: 1, partitions: 4 }
-    influxdb_users:
-      user1: password1
-      user2: password2
 
-## Future work
-- At this point insecure users/passwords are used for mysql.
+## TODO
+- The notification engine user could be given readonly access to the db but in the current setup there is no way
+  to specify that so it gets full access like the rest of the users.
 
 ##License
 Apache

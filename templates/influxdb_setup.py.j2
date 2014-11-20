@@ -9,6 +9,11 @@ DBNAME='{{influxdb_dbname}}'
 USERS={{influxdb_users}}
 URL='http://127.0.0.1:8086'
 
+SHARDSPACE_NAME='default'
+REPLICATION={{influxdb.replication_factor}}
+RETENTION='{{influxdb_retention_policy}}'
+DURATION='{{influxdb_shard_duration}}'
+
 import json
 import sys
 import time
@@ -39,6 +44,12 @@ def main(argv=None):
     dbs = influxdb_query_names(URL + '/db' + auth_str)
     if DBNAME not in dbs:
         influxdb_post(URL + '/db' + auth_str, {"name": DBNAME})
+    #List current shard spaces
+    shardspaces = influxdb_query_names(URL + '/cluster/shard_spaces' + auth_str)
+    if SHARDSPACE_NAME not in shardspaces:
+        # we could pass in a config file for the data when we want more shards
+        influxdb_post(URL + '/cluster/shard_spaces/' + DBNAME + auth_str, 
+            {"name":SHARDSPACE_NAME, "retentionPolicy": RETENTION, "shardDuration": DURATION, "regex":"/.*/", "replicationFactor": REPLICATION, "split":1})
 
     # Create the users
     users = influxdb_query_names(URL + '/db/' + DBNAME + '/users' + auth_str)

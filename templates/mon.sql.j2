@@ -133,6 +133,9 @@ CREATE TABLE `schema_migrations` (
   UNIQUE KEY `unique_schema_migrations` (`version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+/*
+ * To require ssl connections add 'REQUIRE SSL' to the end of all grant statements
+ */
 {% for name, pass in mysql_users.iteritems() %}
 CREATE USER '{{name}}'@'%' IDENTIFIED BY '{{pass}}';
 GRANT ALL ON mon.* TO '{{name}}'@'%';

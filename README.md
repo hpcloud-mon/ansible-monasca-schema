@@ -11,6 +11,7 @@ These tags can be used to specify just sections of the role
 The monasca services for mysql, influxdb and kafka must be up and running.
 - zookeeper_hosts - comma separated list of host:port pairs.
 - influxdb_users - dictionary of user/password pairs
+- influxdb_url - URL of the influxdb server
 - mysql_users - dictionary of user/password pairs
 
 Optionally for defining topics, define kafka_topics for example

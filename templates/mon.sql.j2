@@ -11,7 +11,7 @@ CREATE TABLE `alarm` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `tenant_id` (`alarm_definition_id`),
+  KEY `alarm_definition_id` (`alarm_definition_id`),
   KEY `sequence_no` (`sequence_no`),
   CONSTRAINT `fk_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -40,13 +40,15 @@ CREATE TABLE `alarm_definition` (
   PRIMARY KEY (`id`),
   KEY `sequence_no` (`sequence_no`),
   KEY `tenant_id` (`tenant_id`),
-  KEY `created_at` (`created_at`)
+  KEY `deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `alarm_metric` (
   `alarm_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `metric_definition_dimensions_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
-  PRIMARY KEY (`alarm_id`,`metric_definition_dimensions_id`)
+  PRIMARY KEY (`alarm_id`,`metric_definition_dimensions_id`),
+  KEY `alarm_id` (`alarm_id`),
+  KEY `metric_definition_dimensions_id` (`metric_definition_dimensions_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `metric_definition` (
@@ -61,6 +63,8 @@ CREATE TABLE `metric_definition_dimensions` (
   `id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   `metric_definition_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   `metric_dimension_set_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+  KEY `metric_definition_id` (`metric_definition_id`),
+  KEY `metric_dimension_set_id` (`metric_dimension_set_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -81,7 +85,8 @@ CREATE TABLE `metric_dimension` (
   `dimension_set_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `value` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-   UNIQUE KEY `metric_dimension_key` (`dimension_set_id`,`name`(252))
+   UNIQUE KEY `metric_dimension_key` (`dimension_set_id`,`name`(252)),
+   KEY `dimension_set_id` (`dimension_set_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='PRIMARY KEY (`id`)';
 
 CREATE TABLE `notification_method` (

@@ -5,14 +5,12 @@ SET foreign_key_checks = 0;
 
 CREATE TABLE `alarm` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sequence_no` integer auto_increment,
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `state` enum('UNDETERMINED','OK','ALARM') COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `alarm_definition_id` (`alarm_definition_id`),
-  KEY `sequence_no` (`sequence_no`),
   CONSTRAINT `fk_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -26,7 +24,6 @@ CREATE TABLE `alarm_action` (
 
 CREATE TABLE `alarm_definition` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sequence_no` integer auto_increment,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `description` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -38,7 +35,6 @@ CREATE TABLE `alarm_definition` (
   `updated_at` datetime NOT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `sequence_no` (`sequence_no`),
   KEY `tenant_id` (`tenant_id`),
   KEY `deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -91,15 +87,13 @@ CREATE TABLE `metric_dimension` (
 
 CREATE TABLE `notification_method` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sequence_no` integer auto_increment,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `type` enum('EMAIL','SMS', 'WEBHOOK') COLLATE utf8mb4_unicode_ci NOT NULL,
   `address` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `sequence_no` (`sequence_no`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `sub_alarm_definition` (

@@ -1,4 +1,7 @@
 ---
 - include: influxdb.yaml tags=influxdb_schema
+  when: influxdb_schema_enabled
 - include: mysql.yaml tags=mysql_schema
+  when: mysql_schema_enabled
 - include: kafka_topics.yaml tags=kafka_topics
+  when: kafka_topics_enabled

@@ -25,8 +25,8 @@ CREATE TABLE `alarm_action` (
 CREATE TABLE `alarm_definition` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `description` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `expression` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `severity` enum('LOW','MEDIUM','HIGH','CRITICAL') COLLATE utf8mb4_unicode_ci NOT NULL,
   `match_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',

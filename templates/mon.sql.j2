@@ -3,7 +3,7 @@ USE `mon`;
 
 SET foreign_key_checks = 0;
 
-CREATE TABLE `alarm` (
+CREATE TABLE IF NOT EXISTS `alarm` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `state` enum('UNDETERMINED','OK','ALARM') COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE `alarm` (
   CONSTRAINT `fk_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `alarm_action` (
+CREATE TABLE IF NOT EXISTS `alarm_action` (
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alarm_state` enum('UNDETERMINED','OK','ALARM') COLLATE utf8mb4_unicode_ci NOT NULL,
   `action_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE `alarm_action` (
   CONSTRAINT `fk_alarm_action_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `alarm_definition` (
+CREATE TABLE IF NOT EXISTS `alarm_definition` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
@@ -39,7 +39,7 @@ CREATE TABLE `alarm_definition` (
   KEY `deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `alarm_metric` (
+CREATE TABLE IF NOT EXISTS `alarm_metric` (
   `alarm_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `metric_definition_dimensions_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (`alarm_id`,`metric_definition_dimensions_id`),
@@ -48,7 +48,7 @@ CREATE TABLE `alarm_metric` (
   CONSTRAINT `fk_alarm_id` FOREIGN KEY (`alarm_id`) REFERENCES `alarm` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `metric_definition` (
+CREATE TABLE IF NOT EXISTS `metric_definition` (
   `id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE `metric_definition` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `metric_definition_dimensions` (
+CREATE TABLE IF NOT EXISTS `metric_definition_dimensions` (
   `id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   `metric_definition_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   `metric_dimension_set_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
@@ -78,7 +78,7 @@ CREATE TABLE `metric_definition_dimensions` (
  * the "insert into metric_dimension ... on duplicate key update dimension_set_id=dimension_set_id
  * syntax
  */
-CREATE TABLE `metric_dimension` (
+CREATE TABLE IF NOT EXISTS `metric_dimension` (
   `dimension_set_id` binary(20) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `value` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -86,7 +86,7 @@ CREATE TABLE `metric_dimension` (
    KEY `dimension_set_id` (`dimension_set_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='PRIMARY KEY (`id`)';
 
-CREATE TABLE `notification_method` (
+CREATE TABLE IF NOT EXISTS `notification_method` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -97,7 +97,7 @@ CREATE TABLE `notification_method` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `sub_alarm_definition` (
+CREATE TABLE IF NOT EXISTS `sub_alarm_definition` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `function` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -113,14 +113,14 @@ CREATE TABLE `sub_alarm_definition` (
   CONSTRAINT `fk_sub_alarm_definition` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `sub_alarm_definition_dimension` (
+CREATE TABLE IF NOT EXISTS `sub_alarm_definition_dimension` (
   `sub_alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `dimension_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   CONSTRAINT `fk_sub_alarm_definition_dimension` FOREIGN KEY (`sub_alarm_definition_id`) REFERENCES `sub_alarm_definition` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `sub_alarm` (
+CREATE TABLE IF NOT EXISTS `sub_alarm` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alarm_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `sub_expression_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
@@ -134,7 +134,7 @@ CREATE TABLE `sub_alarm` (
   CONSTRAINT `fk_sub_alarm_expr` FOREIGN KEY (`sub_expression_id`) REFERENCES `sub_alarm_definition` (`id`)
 );
 
-CREATE TABLE `schema_migrations` (
+CREATE TABLE IF NOT EXISTS `schema_migrations` (
   `version` varchar(255) NOT NULL,
   UNIQUE KEY `unique_schema_migrations` (`version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -143,10 +143,8 @@ CREATE TABLE `schema_migrations` (
  * To require ssl connections add 'REQUIRE SSL' to the end of all grant statements
  */
 {% for name, pass in mysql_users.iteritems() %}
-CREATE USER '{{name}}'@'%' IDENTIFIED BY '{{pass}}';
-GRANT ALL ON mon.* TO '{{name}}'@'%';
-CREATE USER '{{name}}'@'localhost' IDENTIFIED BY '{{pass}}';
-GRANT ALL ON mon.* TO '{{name}}'@'localhost';
+GRANT ALL ON mon.* TO '{{name}}'@'%' IDENTIFIED BY '{{pass}}';
+GRANT ALL ON mon.* TO '{{name}}'@'localhost' IDENTIFIED BY '{{pass}}';
 {% endfor %}
 
 SET foreign_key_checks = 1;

@@ -4,6 +4,6 @@
   register: copy_result
 
 - name: Apply mysql schema to db
-  shell: mysql -u{{mysql_admin}} -p{{mysql_admin_password}} < {{monasca_schema_file}}
+  shell: mysql -u{{mysql_admin}} -p{{mysql_admin_password}} < {{monasca_schema_file}} || echo "Did the schema change? This process will fail on schema changes."
   when: copy_result|changed
 

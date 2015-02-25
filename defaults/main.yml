@@ -2,6 +2,7 @@
 influxdb_schema_enabled: true
 kafka_topics_enabled: true
 mysql_schema_enabled: true
+winchester_schema_enabled: true
 influxdb_admin: root
 influxdb_admin_password: root
 influxdb_dbname: mon

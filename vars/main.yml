@@ -1,2 +1,3 @@
 ---
 monasca_schema_file: /var/lib/mysql/mon.sql
+winchester_schema_file: /var/lib/mysql/winchester.sql

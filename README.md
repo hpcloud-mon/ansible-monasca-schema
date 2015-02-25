@@ -6,6 +6,7 @@ These tags can be used to specify just sections of the role
 - kakfa_topics
 - mysql_schema
 - influxdb_schema
+- winchester_schema
 
 ##Requirements
 The monasca services for mysql, influxdb and kafka must be up and running.

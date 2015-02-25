@@ -1,0 +1,8 @@
+---
+- name: Copy winchester schema to host
+  template: dest={{winchester_schema_file}} owner=root group=root mode=640 src=winchester.sql.j2
+  register: copy_result
+
+- name: Apply winchester schema to mysql db
+  shell: mysql -u{{mysql_admin}} {% if mysql_admin_password is defined %} -p{{mysql_admin_password}} {% endif %} < {{winchester_schema_file}} || echo "Did the schema change? This process will fail on schema changes."
+  when: copy_result|changed

@@ -15,3 +15,5 @@ zookeeper_hosts: "localhost:2181"
 mysql_root_dir: /var/lib/mysql
 monasca_schema_file: "{{mysql_root_dir}}/mon.sql"
 winchester_schema_file: "{{mysql_root_dir}}/winchester.sql"
+
+kafka_topics: {}  # If this isn't specified as empty skipping it fails

@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+"""A simple script to setup influxdb user and roles. At some point this should
+   become a more full featured module.  Also this assumes that none of the
+   python based influxdb clients are available on this system.
+"""
+
+ADMIN = '{{influxdb_admin}}'
+ADMIN_PASS = '{{influxdb_admin_password}}'
+DBNAME = '{{influxdb_dbname}}'
+USERS = {{influxdb_users}}
+URL = '{{influxdb_url}}'
+
+SHARDSPACE_NAME = 'persister_all'
+REPLICATION = {{influxdb_replication_factor}}
+RETENTION = '{{influxdb_retention_policy}}'
+DURATION = '{{influxdb_shard_duration}}'
+
+import json
+import sys
+import time
+import requests
+
+
+def influxdb_get(uri, query, db=None):
+    """Runs a query via HTTP GET and returns the response as a Python list."""
+
+    getparams = {"q": query}
+    if db:
+        getparams['db'] = db
+
+    try:
+        req = requests.get(uri, params=getparams)
+        json_value = json.loads(req.content)
+
+        if (len(json_value['results'][0]) > 0 and
+           'values' in json_value['results'][0]['series'][0]):
+            return json_value['results'][0]['series'][0]['values']
+        else:
+            return []
+
+    except KeyError:
+        print "Query returned a non-successful result: {0}".format(json_value)
+
+
+def main(argv=None):
+    """If necessary, create the database, retention policy, and users"""
+    auth_str = '?u=%s&p=%s' % (ADMIN, ADMIN_PASS)
+    api_uri = "{0}/query{1}".format(URL, auth_str)
+
+#    List current databases
+    dbs = influxdb_get(uri=api_uri, query="SHOW DATABASES")
+    if [DBNAME] not in dbs:
+        print "Creating database '{}'".format(DBNAME)
+        influxdb_get(uri=api_uri, query="CREATE DATABASE {0}".format(DBNAME))
+        print "...created!"
+
+#   Check retention policy
+    policies = influxdb_get(uri=api_uri,
+                            query="SHOW RETENTION POLICIES {0}".format(DBNAME))
+    if not any(pol[0] == SHARDSPACE_NAME for pol in policies):
+        # Set retention policy
+        policy = "CREATE RETENTION POLICY {0} ON {1} DURATION {2} REPLICATION {3}".format(SHARDSPACE_NAME,
+                                                                                          DBNAME,
+                                                                                          RETENTION,
+                                                                                          REPLICATION)
+        influxdb_get(uri=api_uri, db=DBNAME, query=policy)
+
+#   Create the users
+    users = influxdb_get(uri=api_uri, query="SHOW USERS", db=DBNAME)
+    for name, password in USERS.iteritems():
+        if not any(user[0] == name for user in users):
+            influxdb_get(uri=api_uri,
+                         query=unicode("CREATE USER {0} WITH PASSWORD '{1}'".format(name, password)),
+                         db=DBNAME)
+
+if __name__ == "__main__":
+    sys.exit(main())

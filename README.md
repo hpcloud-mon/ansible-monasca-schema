@@ -20,7 +20,7 @@ kafka_replicas should be set to 1. The default is 3.
 
 The number of partitions for the kafka topics can be controlled with:
 - kafka_events_partitions - number of partitions for the various events topics, the default is 12
-- kafka_metrics_partitions - number of partitions for the metrics topic, the default is 3
+- kafka_metrics_partitions - number of partitions for the metrics topic, the default is 64
 - kafka_retry_notifications_partitions - This should be the number of systems running the Notification Engine, the default is 3
 
 If the kafka topics have been created, neither the number of partitions nor the number of replicas will not be

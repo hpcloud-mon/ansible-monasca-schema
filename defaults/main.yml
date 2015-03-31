@@ -16,4 +16,17 @@ mysql_root_dir: /var/lib/mysql
 monasca_schema_file: "{{mysql_root_dir}}/mon.sql"
 winchester_schema_file: "{{mysql_root_dir}}/winchester.sql"
 
-kafka_topics: {}  # If this isn't specified as empty skipping it fails
+kafka_events_partitions: 12
+kafka_metrics_partitions: 64
+# This should be the number of systems running the Notification Engine
+kafka_retry_notifications_partitions: 3
+kafka_replicas: 3
+
+kafka_topics:
+  metrics: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_metrics_partitions }}" }
+  events: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  raw-events: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  transformed-events: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  alarm-state-transitions: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  alarm-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  retry-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_retry_notifications_partitions }}" }

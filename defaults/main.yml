@@ -23,10 +23,10 @@ kafka_retry_notifications_partitions: 3
 kafka_replicas: 3
 
 kafka_topics:
-  metrics: { replicas: "{{ kafka_replicas }}, partitions: {{ kafka_metrics_partitions }}" }
-  events: { replicas: "{{ kafka_replicas }}, partitions: {{ kafka_events_partitions }}" }
-  raw-events: { replicas: "{{ kafka_replicas }}, partitions: {{ kafka_events_partitions }}" }
-  transformed-events: { replicas: "{{ kafka_replicas }}, partitions: {{ kafka_events_partitions }}" }
-  alarm-state-transitions: { replicas: "{{ kafka_replicas }}, partitions: {{ kafka_events_partitions }}" }
-  alarm-notifications: { replicas: "{{ kafka_replicas }}, partitions: {{ kafka_events_partitions }}" }
-  retry-notifications: { replicas: "{{ kafka_replicas }}, partitions: {{ kafka_retry_notifications_partitions }}" }
+  metrics: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_metrics_partitions }}" }
+  events: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  raw-events: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  transformed-events: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  alarm-state-transitions: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  alarm-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
+  retry-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_retry_notifications_partitions }}" }

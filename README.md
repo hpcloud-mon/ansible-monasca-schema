@@ -3,7 +3,7 @@ Adds schema to mysql and influxdb, creates db users and creates kafka topics.
 
 ## Tags
 These tags can be used to specify just sections of the role
-- kakfa_topics
+- kafka_topics
 - mysql_schema
 - influxdb_schema
 - winchester_schema

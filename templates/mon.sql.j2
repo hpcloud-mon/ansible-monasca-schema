@@ -164,8 +164,6 @@ CREATE TABLE `stream_definition` (
   `group_by` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `fire_criteria` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `expiration` int(10) UNSIGNED DEFAULT '0',
-  `fire_pipeline` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
-  `expire_pipeline` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
   `actions_enabled` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,

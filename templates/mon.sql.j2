@@ -141,6 +141,43 @@ CREATE TABLE `schema_migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*
+ * The tables needed by Monasca for event stream definitions
+ */
+CREATE TABLE `stream_actions` (
+  `stream_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type` enum('FIRE','EXPIRE') COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`stream_definition_id`,`action_id`,`action_type`),
+  KEY `stream_definition_id` (`stream_definition_id`),
+  KEY `action_type` (`action_type`),
+  KEY `fk_stream_action_notification_method_id` (`action_id`),
+  CONSTRAINT `fk_stream_action_stream_definition_id` FOREIGN KEY (`stream_definition_id`) REFERENCES `stream_definition` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_stream_action_notification_method_id` FOREIGN KEY (`action_id`) REFERENCES `notification_method` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `stream_definition` (
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `select_by` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `group_by` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fire_criteria` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `expiration` int(10) UNSIGNED DEFAULT '0',
+  `actions_enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tenant_name` (`tenant_id`,`name`),
+  KEY `name` (`name`),
+  KEY `tenant_id` (`tenant_id`),
+  KEY `deleted_at` (`deleted_at`),
+  KEY `created_at` (`created_at`),
+  KEY `updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*
  * To require ssl connections add 'REQUIRE SSL' to the end of all grant statements
  */
 {% for name, pass in mysql_users.iteritems() %}

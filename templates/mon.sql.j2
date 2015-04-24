@@ -158,7 +158,7 @@ CREATE TABLE `stream_actions` (
 CREATE TABLE `stream_definition` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `select_by` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `group_by` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -169,6 +169,7 @@ CREATE TABLE `stream_definition` (
   `updated_at` datetime NOT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `tenant_name` (`tenant_id`,`name`),
   KEY `name` (`name`),
   KEY `tenant_id` (`tenant_id`),
   KEY `deleted_at` (`deleted_at`),

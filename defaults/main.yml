@@ -7,7 +7,7 @@ influxdb_admin: root
 influxdb_admin_password: root
 influxdb_dbname: mon
 influxdb_replication_factor: 1
-influxdb_retention_policy: "inf"
+influxdb_retention_policy: "90d"
 influxdb_shard_duration: "7d"
 mysql_admin: root
 zookeeper_hosts: "localhost:2181"

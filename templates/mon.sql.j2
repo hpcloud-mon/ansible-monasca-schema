@@ -10,7 +10,7 @@ CREATE TABLE `alarm` (
   `lifecycle_state` varchar(50) DEFAULT NULL,
   `link` varchar(512) DEFAULT NULL,
   `created_at` datetime NOT NULL,
-  `state_updated_at` datetime NOT NULL,
+  `state_updated_at` datetime,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `alarm_definition_id` (`alarm_definition_id`),

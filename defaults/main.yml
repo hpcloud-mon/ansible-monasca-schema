@@ -10,7 +10,9 @@ influxdb_replication_factor: 1
 influxdb_retention_policy: "90d"
 influxdb_shard_duration: "7d"
 mysql_admin: root
+vertica_schema_enabled: true
 zookeeper_hosts: "localhost:2181"
+database_type: influxdb
 
 mysql_root_dir: /var/lib/mysql
 monasca_schema_file: "{{mysql_root_dir}}/mon.sql"

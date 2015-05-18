@@ -180,9 +180,17 @@ CREATE TABLE `stream_definition` (
 /*
  * To require ssl connections add 'REQUIRE SSL' to the end of all grant statements
  */
+{% if mysql_users is defined %}
 {% for name, pass in mysql_users.iteritems() %}
 GRANT ALL ON mon.* TO '{{name}}'@'%' IDENTIFIED BY '{{pass}}';
 GRANT ALL ON mon.* TO '{{name}}'@'localhost' IDENTIFIED BY '{{pass}}';
 {% endfor %}
+{% endif %}
+{% if mon_mysql_users is defined %}
+{% for user in mon_mysql_users %}
+GRANT ALL ON mon.* TO '{{user.username}}'@'%' IDENTIFIED BY '{{user.password}}';
+GRANT ALL ON mon.* TO '{{user.username}}'@'localhost' IDENTIFIED BY '{{user.password}}';
+{% endfor %}
+{% endif %}
 
 SET foreign_key_checks = 1;

@@ -12,10 +12,6 @@
     influxdb_version: discovered_influxdb_version.stdout_lines|max
   when: influxdb_version is not defined
 
-- name: Write out the influxdb setup script (0.8.x)
-  template: dest=/opt/influxdb/influxdb_setup.py owner=root group=root mode=750 src=influxdb_setup-0.8.py.j2
-  when: influxdb_version|version_compare('0.9', '<')
-
 - name: Write out the influxdb setup script (0.9.x)
   template: dest=/opt/influxdb/influxdb_setup.py owner=root group=root mode=750 src=influxdb_setup-0.9.py.j2
   when: influxdb_version|version_compare('0.9', '>=')

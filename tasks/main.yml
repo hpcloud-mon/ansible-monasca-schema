@@ -1,9 +1,11 @@
 ---
 - include: influxdb.yaml tags=influxdb_schema
-  when: influxdb_schema_enabled
+  when: influxdb_schema_enabled and database_type == 'influxdb'
 - include: mysql.yaml tags=mysql_schema
   when: mysql_schema_enabled
 - include: winchester.yaml tags=winchester_schema
   when: winchester_schema_enabled
 - include: kafka_topics.yaml tags=kafka_topics
   when: kafka_topics_enabled
+- include: vertica.yaml tags=vertica_schema
+  when: vertica_schema_enabled and database_type == 'vertica'

@@ -40,6 +40,25 @@ changed even if the above parameters are changed and the role run again.
 - The notification engine user could be given readonly access to the db but in the current setup there is no way
   to specify that so it gets full access like the rest of the users.
 
+## Running with Vertica
+- To run with vertica make sure that vertica is up and running and change the variable database_type in defaults to vertica.
+- Then add in the users you want for your vertica database to the defaults.
+
+For Example:
+
+```
+vertica_users:
+  - username: monitor
+    password: password
+    role: monitor
+  - username: mon_api
+    password: password
+    role: monasca_api
+  - username: mon_persister
+    password: password
+    role: monasca_persister
+```
+
 ##License
 Apache
 

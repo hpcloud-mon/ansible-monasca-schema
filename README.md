@@ -9,11 +9,21 @@ These tags can be used to specify just sections of the role
 - winchester_schema
 
 ##Requirements
-The monasca services for mysql, influxdb and kafka must be up and running.
+The monasca services for mysql, influxdb and kafka must be up and running. Influxdb must be version 0.9.
 - zookeeper_hosts - comma separated list of host:port pairs.
-- influxdb_users - dictionary of user/password pairs
 - influxdb_url - URL of the influxdb server
-- mysql_users - dictionary of user/password pairs
+- mon_influxdb_users - dictionary of user/password pairs
+```
+    mon_influxdb_users:
+      - username: monasca-api
+        password: some-password
+```
+- mon_mysql_users - Array of entries with a username and password, for example:
+```
+    mon_mysql_users:
+      - username: monasca-api
+        password: some-password
+```
 
 By default, the creation of the kafka topics assume multiple kafka servers. If there is only one, then
 kafka_replicas should be set to 1. The default is 3.

@@ -7,7 +7,16 @@
 ADMIN = '{{influxdb_admin}}'
 ADMIN_PASS = '{{influxdb_admin_password}}'
 DBNAME = '{{influxdb_dbname}}'
+{% if influxdb_users is defined %}
 USERS = {{influxdb_users}}
+{% endif %}
+{% if mon_influxdb_users is defined %}
+USERS = {}
+{% for user in mon_influxdb_users %}
+USERS['{{user.username}}'] = '{{user.password}}'
+{% endfor %}
+{% endif %}
+
 URL = '{{influxdb_url}}'
 
 SHARDSPACE_NAME = 'persister_all'

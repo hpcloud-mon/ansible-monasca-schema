@@ -2,23 +2,8 @@
 # TODO I should create a module for the db/user operations, I tried using uri and even shell with curl directly but between the j2 and yaml
 # parsing I could never get it to escape the json correctly
 
-- name: Get the installed influxdb version if needed
-  command: ls -1 /opt/influxdb/versions
-  register: discovered_influxdb_version
-  when: influxdb_version is not defined
-
-- name: Set influxdb_version
-  set_fact:
-    influxdb_version: discovered_influxdb_version.stdout_lines|max
-  when: influxdb_version is not defined
-
-- name: Write out the influxdb setup script (0.8.x)
-  template: dest=/opt/influxdb/influxdb_setup.py owner=root group=root mode=750 src=influxdb_setup-0.8.py.j2
-  when: influxdb_version|version_compare('0.9', '<')
-
-- name: Write out the influxdb setup script (0.9.x)
+- name: Write out the influxdb setup script
   template: dest=/opt/influxdb/influxdb_setup.py owner=root group=root mode=750 src=influxdb_setup-0.9.py.j2
-  when: influxdb_version|version_compare('0.9', '>=')
 
 - name: Run the influxdb setup script
   command: /opt/influxdb/influxdb_setup.py

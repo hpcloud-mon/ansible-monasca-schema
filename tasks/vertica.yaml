@@ -1,4 +1,22 @@
 ---
+- name: Check if database exists
+  command: /opt/vertica/bin/admintools -t list_db -d mon
+  sudo_user: dbadmin
+  ignore_errors: yes
+  register: create_database
+
+- name: Create database
+  command: su dbadmin -c '/opt/vertica/bin/admintools -t create_db -s {{vertica_cluster | default('127.0.0.1')}} -d mon -p {{vertica_dbadmin_password}}'
+  environment: "{{vertica_env}}"
+  when: create_database|failed
+
+- name: Set restart policy
+  command: /opt/vertica/bin/admintools -t set_restart_policy -d mon -p always
+  sudo_user: dbadmin
+  environment: "{{vertica_env}}"
+
+#TODO: ENABLE SSL
+
 - name: Copy over vertica sql files
   copy: src={{ item }} dest=/var/vertica/{{ item }} mode=660
   with_items:

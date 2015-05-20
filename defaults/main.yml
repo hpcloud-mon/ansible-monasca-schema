@@ -10,6 +10,8 @@ influxdb_replication_factor: 1
 influxdb_retention_policy: "90d"
 influxdb_shard_duration: "7d"
 mysql_admin: root
+vertica_dbadmin_password: password
+vertica_env: {LC_ALL: en_US.UTF-8, LANG: en_US.UTF-8}
 vertica_schema_enabled: true
 zookeeper_hosts: "localhost:2181"
 database_type: influxdb

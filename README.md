@@ -50,6 +50,7 @@ For Example:
 
 ```
 vertica_cluster: "10.10.10.1,10.10.10.2,10.10.10.3"
+database_type: vertica
 vertica_users:
   - username: monitor
     password: password
@@ -61,6 +62,13 @@ vertica_users:
     password: password
     role: monasca_persister
 ```
+
+##Example Playbook
+
+    hosts: group
+    sudo: yes
+    roles:
+      - {role: monasca-schema, tags: [monasca-schema]}
 
 ##License
 Apache

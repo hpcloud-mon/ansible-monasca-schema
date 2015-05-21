@@ -15,8 +15,6 @@
   sudo_user: dbadmin
   environment: "{{vertica_env}}"
 
-#TODO: ENABLE SSL
-
 - name: Copy over vertica sql files
   copy: src={{ item }} dest=/var/vertica/{{ item }} mode=660
   with_items:
@@ -37,4 +35,6 @@
     - mon_alarms_schema.sql
     - mon_users.sql
   when: sql_file_status|changed or sql_template_status|changed
+
+# TODO: ENABLE SSL
   

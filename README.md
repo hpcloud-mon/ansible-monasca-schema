@@ -41,12 +41,16 @@ changed even if the above parameters are changed and the role run again.
   to specify that so it gets full access like the rest of the users.
 
 ## Running with Vertica
-- To run with vertica make sure that vertica is up and running and change the variable database_type in defaults to vertica.
-- Then add in the users you want for your vertica database to the defaults.
+- To run with vertica make sure that vertica is up and running via the [Vertica Role](https://github.com/hpcloud-mon/ansible-vertica) 
+- Change the variable database_type in defaults to vertica.
+- Add in the users you want for your vertica database to the defaults.
+- If running in a cluster set the variable vertica_cluster to a comma separated list of the group of nodes you want apart of the cluster
 
 For Example:
 
 ```
+vertica_cluster: "10.10.10.1,10.10.10.2,10.10.10.3"
+database_type: vertica
 vertica_users:
   - username: monitor
     password: password
@@ -58,6 +62,13 @@ vertica_users:
     password: password
     role: monasca_persister
 ```
+
+##Example Playbook
+
+    hosts: group
+    sudo: yes
+    roles:
+      - {role: monasca-schema, tags: [monasca-schema]}
 
 ##License
 Apache

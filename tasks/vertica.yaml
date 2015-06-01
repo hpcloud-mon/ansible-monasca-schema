@@ -37,6 +37,6 @@
   when: sql_file_status|changed or sql_template_status|changed
 
 - name: Create cron job to clean up old partitions
-  template: src=vertica-cleanup.j2 dest=/etc/cron.daily/vertica-cleanup mode=755
+  template: src=vertica-cleanup.j2 dest=/etc/cron.daily/vertica-cleanup mode=750
 
 # TODO: ENABLE SSL

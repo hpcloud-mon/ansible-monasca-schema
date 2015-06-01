@@ -1,0 +1,17 @@
+#!/bin/sh
+vertica_command="/opt/vertica/bin/vsql -U dbadmin -w {{ vertica_dbadmin_password }} -t -c"
+
+#Get date from vertica
+day=$($vertica_command "SELECT EXTRACT(DAY FROM (SELECT 'NOW'::TIMESTAMP - INTERVAL '{{ vertica_retention_period }} day'));")
+month=$($vertica_command "SELECT EXTRACT(MONTH FROM (SELECT 'NOW'::TIMESTAMP - INTERVAL '{{ vertica_retention_period }} day'));")
+year=$($vertica_command "SELECT EXTRACT(YEAR FROM (SELECT 'NOW'::TIMESTAMP - INTERVAL '{{ vertica_retention_period }} day'));")
+
+checkdate=$((($year * 10000) + ($month * 100) + $day))
+
+#Get partition ids that need to be deleted
+partition_keys=$($vertica_command "SELECT DISTINCT partition_key from PARTITIONS where partition_key < '$checkdate'")
+
+#Delete partitions
+for key in $partition_keys; do
+  $vertica_command "SELECT DROP_PARTITION('MonMetrics.Measurements', '$key')"
+done

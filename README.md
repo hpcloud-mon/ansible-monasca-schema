@@ -45,6 +45,7 @@ changed even if the above parameters are changed and the role run again.
 - Change the variable database_type in defaults to vertica.
 - Add in the users you want for your vertica database to the defaults.
 - If running in a cluster set the variable vertica_cluster to a comma separated list of the group of nodes you want apart of the cluster
+- A cron job is created to delete partitions of data from vertica. It is default to delete anything more than 30 days old. If you want to set it to something else set vertica_retention_period in your call (in days) to the playbook.
 
 For Example:
 

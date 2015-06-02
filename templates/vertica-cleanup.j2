@@ -1,4 +1,5 @@
 #!/bin/sh
+. /etc/profile.d/vertica_node.sh
 vertica_command="/opt/vertica/bin/vsql -U dbadmin -w {{ vertica_dbadmin_password }} -t -c"
 
 #Get date from vertica

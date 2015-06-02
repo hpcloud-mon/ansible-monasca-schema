@@ -13,6 +13,7 @@ mysql_admin: root
 vertica_dbadmin_password: password
 vertica_env: {LC_ALL: en_US.UTF-8, LANG: en_US.UTF-8}
 vertica_schema_enabled: true
+vertica_retention_period: 30
 zookeeper_hosts: "localhost:2181"
 database_type: influxdb
 

@@ -188,7 +188,7 @@ CREATE TABLE `event_transform_specification` (
   `specification` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `enabled` bool DEFAULT NULL,
   `created_at` DATETIME NOT NULL,
-  `updated_at` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL,
   `deleted_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

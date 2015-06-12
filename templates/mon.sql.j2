@@ -180,7 +180,7 @@ CREATE TABLE `stream_definition` (
   KEY `updated_at` (`updated_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `event_transform_specification` (
+CREATE TABLE `event_transform` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -190,7 +190,7 @@ CREATE TABLE `event_transform_specification` (
   `created_at` DATETIME NOT NULL,
   `updated_at` DATETIME NOT NULL,
   `deleted_at` DATETIME DEFAULT NULL,
-  PRIMARY KEY (`name`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*

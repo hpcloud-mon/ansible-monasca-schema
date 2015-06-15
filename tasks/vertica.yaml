@@ -1,17 +1,17 @@
 ---
 - name: Check if database exists
-  command: /opt/vertica/bin/admintools -t list_db -d mon
+  command: /opt/vertica/bin/admintools -t list_db -d {{ vertica_database_name }}
   sudo_user: dbadmin
   ignore_errors: yes
   register: create_database
 
 - name: Create database
-  command: su dbadmin -c '/opt/vertica/bin/admintools -t create_db -s {{vertica_cluster | default('127.0.0.1')}} -d mon -p {{vertica_dbadmin_password}}'
+  command: su dbadmin -c '/opt/vertica/bin/admintools -t create_db -s {{vertica_cluster | default('127.0.0.1')}} -d {{ vertica_database_name }} -p {{vertica_dbadmin_password}}'
   environment: "{{vertica_env}}"
   when: create_database|failed
 
 - name: Set restart policy
-  command: /opt/vertica/bin/admintools -t set_restart_policy -d mon -p always
+  command: /opt/vertica/bin/admintools -t set_restart_policy -d {{ vertica_database_name }} -p always
   sudo_user: dbadmin
   environment: "{{vertica_env}}"
 

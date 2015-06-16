@@ -36,6 +36,15 @@ The number of partitions for the kafka topics can be controlled with:
 If the kafka topics have been created, neither the number of partitions nor the number of replicas will not be
 changed even if the above parameters are changed and the role run again.
 
+##Optional Vertica Parameters
+- vertica_resource_pools_limits - Array of entries with name, maxmemorysize and optional memorysize for limiting memory usage of vertica_resource_pools
+```
+    vertica_resource_pools_limits:
+        - name: wosdata
+          memorysize: 125M
+          maxmemorysize: 250M
+```
+
 ## TODO
 - The notification engine user could be given readonly access to the db but in the current setup there is no way
   to specify that so it gets full access like the rest of the users.

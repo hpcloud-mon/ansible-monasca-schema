@@ -25,7 +25,7 @@
 - name: Copy over template vertica sql files
   template: src={{ item }}.j2 dest=/var/vertica/{{ item }} mode=660
   with_items:
-    - mon_users.sql
+    - mon_users_and_limits.sql
   register: sql_template_status
 
 - name: Write schema to vertica
@@ -33,7 +33,7 @@
   with_items:
     - mon_metrics_schema.sql
     - mon_alarms_schema.sql
-    - mon_users.sql
+    - mon_users_and_limits.sql
   when: sql_file_status|changed or sql_template_status|changed
 
 - name: Create cron job to clean up old partitions

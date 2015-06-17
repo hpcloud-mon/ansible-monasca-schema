@@ -180,6 +180,25 @@ CREATE TABLE `stream_definition` (
   KEY `updated_at` (`updated_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `event_transform` (
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `specification` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `enabled` bool DEFAULT NULL,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+  `deleted_at` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tenant_name` (`tenant_id`,`name`),
+  KEY `name` (`name`),
+  KEY `tenant_id` (`tenant_id`),
+  KEY `deleted_at` (`deleted_at`),
+  KEY `created_at` (`created_at`),
+  KEY `updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 /*
  * To require ssl connections add 'REQUIRE SSL' to the end of all grant statements
  */

@@ -9,7 +9,7 @@ These tags can be used to specify just sections of the role
 - winchester_schema
 
 ##Requirements
-The monasca services for mysql, influxdb and kafka must be up and running. Influxdb must be version 0.9.
+The monasca services for mysql, influxdb and kafka must be up and running. Influxdb must be version 0.9+.
 - zookeeper_hosts - comma separated list of host:port pairs.
 - influxdb_url - URL of the influxdb server
 - mon_influxdb_users - dictionary of user/password pairs

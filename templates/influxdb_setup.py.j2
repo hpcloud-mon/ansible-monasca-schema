@@ -47,7 +47,8 @@ def influxdb_get(uri, query, db=None):
             return []
 
     except KeyError:
-        print "Query returned a non-successful result: {0}".format(json_value)
+        print "Query returned a non-successful result: {0}".format(json_value['results'])
+        sys.exit(1)
 
 
 def main(argv=None):

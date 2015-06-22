@@ -3,7 +3,7 @@
 # parsing I could never get it to escape the json correctly
 
 - name: Write out the influxdb setup script
-  template: dest=/opt/influxdb/influxdb_setup.py owner=root group=root mode=750 src=influxdb_setup-0.9.py.j2
+  template: dest=/opt/influxdb/influxdb_setup.py owner=root group=root mode=750 src=influxdb_setup.py.j2
 
 - name: Run the influxdb setup script
   command: /opt/influxdb/influxdb_setup.py

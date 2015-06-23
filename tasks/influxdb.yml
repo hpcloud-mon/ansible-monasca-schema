@@ -7,3 +7,7 @@
 
 - name: Run the influxdb setup script
   command: /opt/influxdb/influxdb_setup.py
+  register: result
+  until: result | success
+  retries: 5
+  delay: 2

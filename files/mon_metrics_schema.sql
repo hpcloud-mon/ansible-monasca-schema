@@ -1,4 +1,4 @@
-DROP SCHEMA MonMetrics CASCADE; 
+DROP SCHEMA MonMetrics CASCADE;
 
 CREATE SCHEMA MonMetrics;
 
@@ -39,69 +39,69 @@ CREATE TABLE MonMetrics.DefinitionDimensions (
 CREATE PROJECTION Measurements_DBD_1_rep_MonMetrics /*+createtype(D)*/
 (
  definition_dimensions_id ENCODING RLE,
- time_stamp ENCODING DELTAVAL, 
+ time_stamp ENCODING DELTAVAL,
  value ENCODING AUTO,
- value_meta ENCODING AUTO
+ value_meta ENCODING RLE
 )
 AS
- SELECT  
-        definition_dimensions_id, 
-        time_stamp, 
+ SELECT definition_dimensions_id,
+        time_stamp,
         value,
         value_meta
- FROM MonMetrics.Measurements 
+ FROM MonMetrics.Measurements
  ORDER BY definition_dimensions_id,
-          time_stamp
+          time_stamp,
+          value_meta
 UNSEGMENTED ALL NODES;
 
 CREATE PROJECTION Definitions_DBD_2_rep_MonMetrics /*+createtype(D)*/
 (
- id ENCODING RLE, 
+ id ENCODING AUTO,
  name ENCODING AUTO,
- tenant_id ENCODING RLE, 
+ tenant_id ENCODING RLE,
  region ENCODING RLE
 )
 AS
- SELECT id, 
-        name, 
-        tenant_id, 
+ SELECT id,
+        name,
+        tenant_id,
         region
- FROM MonMetrics.Definitions 
- ORDER BY id,
+ FROM MonMetrics.Definitions
+ ORDER BY region,
           tenant_id,
-          region,
           name
 UNSEGMENTED ALL NODES;
 
 CREATE PROJECTION Dimensions_DBD_3_rep_MonMetrics /*+createtype(D)*/
 (
- id ENCODING RLE, 
- name ENCODING AUTO, 
+ dimension_set_id ENCODING AUTO,
+ name ENCODING RLE,
  value ENCODING AUTO
 )
 AS
- SELECT dimension_set_id, 
-        name, 
+ SELECT dimension_set_id,
+        name,
         value
- FROM MonMetrics.Dimensions 
- ORDER BY dimension_set_id,
-          name
+ FROM MonMetrics.Dimensions
+ ORDER BY name,
+          value,
+          dimension_set_id
+
 UNSEGMENTED ALL NODES;
 
 CREATE PROJECTION DefinitionDimensions_DBD_4_rep_MonMetrics /*+createtype(D)*/
 (
- id ENCODING RLE, 
- definition_id,
- dimension_set_id
+ id ENCODING AUTO,
+ definition_id ENCODING RLE,
+ dimension_set_id ENCODING AUTO
 )
 AS
- SELECT id, 
-        definition_id, 
+ SELECT id,
+        definition_id,
         dimension_set_id
- FROM MonMetrics.DefinitionDimensions 
+ FROM MonMetrics.DefinitionDimensions
  ORDER BY definition_id,
-          dimension_set_id,
-          id
+          dimension_set_id
 UNSEGMENTED ALL NODES;
 
 select refresh('MonMetrics.Measurements, MonMetrics.Definitions, MonMetrics.Dimensions, MonMetrics.DefinitionDimensions');

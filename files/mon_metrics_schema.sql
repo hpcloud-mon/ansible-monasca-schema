@@ -52,7 +52,6 @@ AS
  ORDER BY definition_dimensions_id,
           time_stamp,
           value_meta
-UNSEGMENTED ALL NODES;
 
 CREATE PROJECTION Definitions_DBD_2_rep_MonMetrics /*+createtype(D)*/
 (
@@ -86,7 +85,6 @@ AS
  ORDER BY name,
           value,
           dimension_set_id
-
 UNSEGMENTED ALL NODES;
 
 CREATE PROJECTION DefinitionDimensions_DBD_4_rep_MonMetrics /*+createtype(D)*/

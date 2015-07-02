@@ -50,7 +50,7 @@ changed even if the above parameters are changed and the role run again.
   to specify that so it gets full access like the rest of the users.
 
 ## Running with Vertica
-- To run with vertica make sure that vertica is up and running via the [Vertica Role](https://github.com/hpcloud-mon/ansible-vertica) 
+- To run with vertica make sure that vertica is up and running via the [Vertica Role](https://github.com/hpcloud-mon/ansible-vertica)
 - Change the variable database_type in defaults to vertica.
 - Add in the users you want for your vertica database to the defaults.
 - If running in a cluster set the variable vertica_cluster to a comma separated list of the group of nodes you want apart of the cluster

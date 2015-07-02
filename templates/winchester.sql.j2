@@ -26,31 +26,31 @@ CREATE TABLE alembic_version (
 -- Running upgrade None -> 3ab6d7bf80cd
 
 CREATE TABLE event_type (
-    id INTEGER NOT NULL AUTO_INCREMENT, 
-    `desc` VARCHAR(255), 
-    PRIMARY KEY (id), 
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    `desc` VARCHAR(255),
+    PRIMARY KEY (id),
     UNIQUE (`desc`)
 );
 
 CREATE TABLE event (
-    id INTEGER NOT NULL AUTO_INCREMENT, 
-    message_id VARCHAR(50), 
-    generated DECIMAL(20, 6), 
-    event_type_id INTEGER, 
-    PRIMARY KEY (id), 
-    FOREIGN KEY(event_type_id) REFERENCES event_type (id), 
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    message_id VARCHAR(50),
+    generated DECIMAL(20, 6),
+    event_type_id INTEGER,
+    PRIMARY KEY (id),
+    FOREIGN KEY(event_type_id) REFERENCES event_type (id),
     UNIQUE (message_id)
 );
 
 CREATE TABLE trait (
-    event_id INTEGER NOT NULL, 
-    name VARCHAR(100) NOT NULL, 
-    type INTEGER, 
-    t_string VARCHAR(255), 
-    t_float FLOAT, 
-    t_int INTEGER, 
-    t_datetime DECIMAL(20, 6), 
-    PRIMARY KEY (event_id, name), 
+    event_id INTEGER NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    type INTEGER,
+    t_string VARCHAR(255),
+    t_float FLOAT,
+    t_int INTEGER,
+    t_datetime DECIMAL(20, 6),
+    PRIMARY KEY (event_id, name),
     FOREIGN KEY(event_id) REFERENCES event (id)
 );
 
@@ -59,14 +59,14 @@ INSERT INTO alembic_version (version_num) VALUES ('3ab6d7bf80cd');
 -- Running upgrade 3ab6d7bf80cd -> 44289d1492e6
 
 CREATE TABLE stream (
-    id INTEGER NOT NULL AUTO_INCREMENT, 
-    first_event DECIMAL(20, 6) NOT NULL, 
-    last_event DECIMAL(20, 6) NOT NULL, 
-    expire_timestamp DECIMAL(20, 6), 
-    fire_timestamp DECIMAL(20, 6), 
-    name VARCHAR(255) NOT NULL, 
-    state INTEGER NOT NULL, 
-    state_serial_no INTEGER NOT NULL, 
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    first_event DECIMAL(20, 6) NOT NULL,
+    last_event DECIMAL(20, 6) NOT NULL,
+    expire_timestamp DECIMAL(20, 6),
+    fire_timestamp DECIMAL(20, 6),
+    name VARCHAR(255) NOT NULL,
+    state INTEGER NOT NULL,
+    state_serial_no INTEGER NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -79,16 +79,16 @@ CREATE INDEX ix_stream_name ON stream (name);
 CREATE INDEX ix_stream_state ON stream (state);
 
 CREATE TABLE dist_trait (
-    stream_id INTEGER NOT NULL, 
-    name VARCHAR(100) NOT NULL, 
-    type INTEGER, 
-    dt_string VARCHAR(255), 
-    dt_float FLOAT, 
-    dt_int INTEGER, 
-    dt_datetime DECIMAL(20, 6), 
-    dt_timerange_begin DECIMAL(20, 6), 
-    dt_timerange_end DECIMAL(20, 6), 
-    PRIMARY KEY (stream_id, name), 
+    stream_id INTEGER NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    type INTEGER,
+    dt_string VARCHAR(255),
+    dt_float FLOAT,
+    dt_int INTEGER,
+    dt_datetime DECIMAL(20, 6),
+    dt_timerange_begin DECIMAL(20, 6),
+    dt_timerange_end DECIMAL(20, 6),
+    PRIMARY KEY (stream_id, name),
     FOREIGN KEY(stream_id) REFERENCES stream (id)
 );
 
@@ -105,10 +105,10 @@ CREATE INDEX ix_dist_trait_dt_timerange_begin ON dist_trait (dt_timerange_begin)
 CREATE INDEX ix_dist_trait_dt_timerange_end ON dist_trait (dt_timerange_end);
 
 CREATE TABLE streamevent (
-    stream_id INTEGER NOT NULL, 
-    event_id INTEGER NOT NULL, 
-    PRIMARY KEY (stream_id, event_id), 
-    FOREIGN KEY(event_id) REFERENCES event (id), 
+    stream_id INTEGER NOT NULL,
+    event_id INTEGER NOT NULL,
+    PRIMARY KEY (stream_id, event_id),
+    FOREIGN KEY(event_id) REFERENCES event (id),
     FOREIGN KEY(stream_id) REFERENCES stream (id)
 );
 

@@ -26,7 +26,8 @@ RETENTION = '{{influxdb_retention_policy}}'
 import json
 import sys
 import time
-import requests
+import urllib
+import urllib2
 
 
 def influxdb_get(uri, query, db=None):
@@ -37,8 +38,10 @@ def influxdb_get(uri, query, db=None):
         getparams['db'] = db
 
     try:
-        req = requests.get(uri, params=getparams)
-        json_value = json.loads(req.content)
+        params = urllib.urlencode(getparams)
+        uri = "{}&{}".format(uri,params)
+        req = urllib2.urlopen(uri)
+        json_value = json.loads(req.read())
 
         if (len(json_value['results'][0]) > 0 and
            'values' in json_value['results'][0]['series'][0]):

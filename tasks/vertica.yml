@@ -5,10 +5,21 @@
   ignore_errors: yes
   register: create_database
 
+- name: Place community license key
+  copy: src=community_license.key dest=/opt/vertica/config/share/license.key owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=664
+  when: vertica_license is not defined
+
+- name: Place license key
+  copy: content="{{vertica_license}}" dest=/opt/vertica/config/share/license.key owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=664
+  when: vertica_license is defined
+
 - name: Create database
   command: su dbadmin -c '/opt/vertica/bin/admintools -t create_db -s {{vertica_cluster | default('127.0.0.1')}} -d {{ vertica_database_name }} -p {{vertica_dbadmin_password}}'
   environment: "{{vertica_env}}"
   when: create_database|failed
+
+- name: Remove vertica file
+  file: path=/opt/vertica/config/share/license.key state=absent
 
 - name: Set restart policy
   command: /opt/vertica/bin/admintools -t set_restart_policy -d {{ vertica_database_name }} -p always

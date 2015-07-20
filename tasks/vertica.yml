@@ -6,7 +6,7 @@
   register: create_database
 
 - name: Create database
-  command: su dbadmin -c '/opt/vertica/bin/admintools -t create_db -s {{vertica_cluster | default('127.0.0.1')}} -d {{ vertica_database_name }} -p {{vertica_dbadmin_password}}'
+  command: su dbadmin -c '/opt/vertica/bin/admintools -t create_db -s {{vertica_cluster | default('127.0.0.1')}} -d "{{ vertica_database_name }}" -p "{{vertica_dbadmin_password}}"'
   environment: "{{vertica_env}}"
   when: create_database|failed
 
@@ -30,7 +30,7 @@
   register: sql_template_status
 
 - name: Write schema to vertica
-  shell: /opt/vertica/bin/vsql -U dbadmin -w  {{vertica_dbadmin_password}} < /var/vertica/{{ item }}
+  shell: /opt/vertica/bin/vsql -U dbadmin -w  '{{vertica_dbadmin_password}}' < /var/vertica/{{ item }}
   with_items:
     - mon_metrics_schema.sql
     - mon_alarms_schema.sql

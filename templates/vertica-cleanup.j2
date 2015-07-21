@@ -15,4 +15,5 @@ partition_keys=$($vertica_command "SELECT DISTINCT partition_key from PARTITIONS
 #Delete partitions
 for key in $partition_keys; do
   $vertica_command "SELECT DROP_PARTITION('MonMetrics.Measurements', '$key')"
+  $vertica_command "SELECT DROP_PARTITION('MonAlarms.StateHistory', '$key')"
 done

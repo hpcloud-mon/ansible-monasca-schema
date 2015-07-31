@@ -39,3 +39,6 @@ kafka_topics:
   alarm-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
   stream-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
   retry-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_retry_notifications_partitions }}" }
+
+# flag to track restart requirement during reconfigure
+monasca_schema_restart_required: false

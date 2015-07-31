@@ -1,0 +1,4 @@
+---
+- name: monasca_schema_config_change
+  set_fact:
+    monasca_schema_restart_required: true

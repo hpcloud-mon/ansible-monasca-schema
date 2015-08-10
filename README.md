@@ -44,6 +44,7 @@ changed even if the above parameters are changed and the role run again.
           memorysize: 125M
           maxmemorysize: 250M
 ```
+- vertica_max_client_sessions - The max number of allowed client sessions. Default is 50
 
 ## TODO
 - The notification engine user could be given readonly access to the db but in the current setup there is no way

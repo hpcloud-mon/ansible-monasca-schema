@@ -32,3 +32,6 @@ ALTER USER {{ item.username }} DEFAULT ROLE {{ item.role }};
 ALTER RESOURCE POOL {{ item.name }}  {% if item.memorysize is defined %}memorysize '{{ item.memorysize}}' {% endif %}maxmemorysize '{{ item.maxmemorysize }}';
 {% endfor %}
 {% endif %}
+{% if vertica_max_client_sessions is defined %}
+SELECT SET_CONFIG_PARAMETER('MaxClientSessions', '{{vertica_max_client_sessions}}')
+{% endif %}

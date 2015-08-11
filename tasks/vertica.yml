@@ -40,8 +40,4 @@
 - name: Create cron job to clean up old partitions
   template: src=vertica-cleanup.j2 dest=/etc/cron.daily/vertica-cleanup mode=750
 
-- name: Change number of Allowed Sessions
-  command: /opt/vertica/bin/vsql -U dbadmin -w '{{ vertica_dbadmin_password }}' -c "SELECT SET_CONFIG_PARAMETER('MaxClientSessions', {{vertica_max_client_sessions}})"
-  when: vertica_max_client_sessions is defined
-
 # TODO: ENABLE SSL

@@ -7,6 +7,7 @@ These tags can be used to specify just sections of the role
 - mysql_schema
 - influxdb_schema
 - winchester_schema
+- migration
 
 ##Requirements
 The monasca services for mysql, influxdb and kafka must be up and running. Influxdb must be version 0.9+.
@@ -45,6 +46,26 @@ changed even if the above parameters are changed and the role run again.
           maxmemorysize: 250M
 ```
 - vertica_max_client_sessions - The max number of allowed client sessions. Default is 50
+
+## Migration
+Migration requires given databases engine to be running. Following variables must be set prior to migration:
+- [required] migration_pack - Array of file names (without **sql** extension) under **files/migration/{db_mode}**,
+- [optional] migration_pack_dir_dest - remote location where migration scripts are
+copied into and executed from. By default it is equal to **{{database_root_dir}}/migration**.
+- [optional] migration_pack_dir_src - local location where migration pack are copied
+from. By default it points to **migration** directory under files.
+
+**db_mode** takes different values for following variables being set to true:
+- mysql_schema_enabled - mode is **mysql**
+
+## Single migration only
+Migration can not be run multiple times. This means that once migration scripts
+have been copied to remote host and applied for given database, another migration
+run will not modify the database again. In order to re-run migration all files
+under **migration_pack_dir_dest** must be deleted.
+
+### Supported databases
+- MySQL
 
 ## TODO
 - The notification engine user could be given readonly access to the db but in the current setup there is no way

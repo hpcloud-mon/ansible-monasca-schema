@@ -1,0 +1,71 @@
+---
+- name: Create database
+  sudo_user: postgres
+  postgresql_db: name="{{ database_name }}"
+
+- name: create datbase schema dir
+  file: path={{database_root_dir}} state=directory owner=root group=root mode=755 recurse=yes
+
+- name: Copy postgres schema to host
+  template: dest={{monasca_schema_file}} owner=postgres group=postgres mode=640 src=mon_postgres.sql.j2
+  register: copy_result
+
+- name: Apply postgres schema to db
+  sudo_user: postgres
+  shell: ". /etc/environment; psql -d{{database_name}} < {{monasca_schema_file}} || echo 'Did the schema change? This process will fail on schema changes.'"
+  when: copy_result|changed
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/alarm:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/alarm_action:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/alarm_definition:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/alarm_metric:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/metric_definition:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/metric_definition_dimensions:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/metric_dimension:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/notification_method:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/sub_alarm:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/sub_alarm_definition:ALL
+  with_dict: database_users
+
+- name: Set grants for database users
+  sudo_user: postgres
+  postgresql_user: db={{database_name}} name={{item.key}} password={{item.value}} priv=ALL/sub_alarm_definition_dimension:ALL
+  with_dict: database_users

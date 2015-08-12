@@ -6,7 +6,7 @@ SET foreign_key_checks = 0;
 CREATE TABLE `alarm` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `state` enum('UNDETERMINED','OK','ALARM') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `state` varchar(20) NOT NULL,
   `lifecycle_state` varchar(50) DEFAULT NULL,
   `link` varchar(512) DEFAULT NULL,
   `created_at` datetime NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE `alarm` (
 
 CREATE TABLE `alarm_action` (
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alarm_state` enum('UNDETERMINED','OK','ALARM') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alarm_state` varchar(20) NOT NULL,
   `action_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`alarm_definition_id`,`alarm_state`,`action_id`),
   CONSTRAINT `fk_alarm_action_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE,
@@ -31,8 +31,8 @@ CREATE TABLE `alarm_definition` (
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `expression` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `severity` enum('LOW','MEDIUM','HIGH','CRITICAL') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expression` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `severity` varchar(20) NOT NULL,
   `match_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
   `actions_enabled` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` datetime NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE `notification_method` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` enum('EMAIL', 'WEBHOOK', 'PAGERDUTY') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(20) NOT NULL,
   `address` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE `sub_alarm` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alarm_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `sub_expression_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `expression` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expression` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
@@ -149,7 +149,7 @@ CREATE TABLE `schema_migrations` (
 CREATE TABLE `stream_actions` (
   `stream_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `action_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `action_type` enum('FIRE','EXPIRE') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type` varchar(20) NOT NULL,
   PRIMARY KEY (`stream_definition_id`,`action_id`,`action_type`),
   KEY `stream_definition_id` (`stream_definition_id`),
   KEY `action_type` (`action_type`),
@@ -163,9 +163,9 @@ CREATE TABLE `stream_definition` (
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `select_by` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `group_by` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `fire_criteria` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `select_by` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `group_by` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fire_criteria` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `expiration` int(10) UNSIGNED DEFAULT '0',
   `actions_enabled` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` datetime NOT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE `event_transform` (
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `specification` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `specification` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `enabled` bool DEFAULT NULL,
   `created_at` DATETIME NOT NULL,
   `updated_at` DATETIME NOT NULL,
@@ -216,3 +216,27 @@ GRANT ALL ON mon.* TO '{{user.username}}'@'localhost' IDENTIFIED BY '{{user.pass
 {% endif %}
 
 SET foreign_key_checks = 1;
+
+{% if mysql_constraint_triggers is defined %}
+DELIMITER &&
+{% for trigger in mysql_constraint_triggers %}
+{% set tableName = trigger.when.lower() + '_' + trigger.table + '_' + trigger.action.lower() %}
+
+DROP TRIGGER IF EXISTS mon.{{ tableName }}&&
+CREATE TRIGGER mon.{{ tableName }}
+{{ trigger.when }} {{ trigger.action }}
+ON `{{ trigger.table }}` FOR EACH ROW
+BEGIN
+  -- {{ trigger.when }} for table {{ trigger.table }} enforces enum constraints
+  SET @validValues = '{{ trigger.constraints }}';
+  SET @isFound = (SELECT FIND_IN_SET(new.{{ trigger.column }}, @validValues));
+
+  IF @isFound < 1 THEN
+    SET @msg = (SELECT CONCAT('check constraint failed for {{ trigger.table }}.{{ trigger.column }}, value not in ', @validValues));
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @msg;
+  END IF;
+END&&
+
+{% endfor %}
+DELIMITER ;
+{% endif %}

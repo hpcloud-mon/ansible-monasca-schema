@@ -4,6 +4,18 @@
 influxdb_schema_enabled: true
 kafka_topics_enabled: true
 mysql_schema_enabled: true
+mysql_constraint_triggers:
+  - { table: "alarm", column: "state", when: "BEFORE", action: "INSERT", constraints: "UNDETERMINED,OK,ALARM" }
+  - { table: "alarm", column: "state", when: "BEFORE", action: "UPDATE", constraints: "UNDETERMINED,OK,ALARM" }
+  - { table: "alarm_action", column: "alarm_state", when: "BEFORE", action: "INSERT", constraints: "UNDETERMINED,OK,ALARM" }
+  - { table: "alarm_action", column: "alarm_state", when: "BEFORE", action: "UPDATE", constraints: "UNDETERMINED,OK,ALARM" }
+  - { table: "alarm_definition", column: "severity", when: "BEFORE", action: "INSERT", constraints: "LOW,MEDIUM,HIGH,CRITICAL" }
+  - { table: "alarm_definition", column: "severity", when: "BEFORE", action: "UPDATE", constraints: "LOW,MEDIUM,HIGH,CRITICAL" }
+  - { table: "notification_method", column: "type", when: "BEFORE", action: "INSERT", constraints: "EMAIL,WEBHOOK,PAGERDUTY" }
+  - { table: "notification_method", column: "type", when: "BEFORE", action: "UPDATE", constraints: "EMAIL,WEBHOOK,PAGERDUTY" }
+  - { table: "stream_actions", column: "action_type", when: "BEFORE", action: "INSERT", constraints: "FIRE,EXPIRE" }
+  - { table: "stream_actions", column: "action_type", when: "BEFORE", action: "UPDATE", constraints: "FIRE,EXPIRE" }
+postgres_schema_enabled: false
 winchester_schema_enabled: true
 influxdb_admin: root
 influxdb_admin_password: root
@@ -20,9 +32,13 @@ vertica_retention_period: 30
 zookeeper_hosts: "localhost:2181"
 database_type: influxdb
 
-mysql_root_dir: /var/lib/mysql
-monasca_schema_file: "{{mysql_root_dir}}/mon.sql"
-winchester_schema_file: "{{mysql_root_dir}}/winchester.sql"
+database_admin: postgres
+database_name: mon
+database_root_dir: /opt/monasca/sqls
+database_users: {}
+
+monasca_schema_file: "{{database_root_dir}}/mon.sql"
+winchester_schema_file: "{{database_root_dir}}/winchester.sql"
 
 kafka_events_partitions: 12
 kafka_metrics_partitions: 64
@@ -41,3 +57,13 @@ kafka_topics:
   alarm-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
   stream-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_events_partitions }}" }
   retry-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_retry_notifications_partitions }}" }
+
+# migration pack is a array containing files names under files/migration/{db_name}
+# db_name can be either:
+# - mysql if mysql_schema_enabled
+# *.sql extension is by default assumed
+# migration_pack:
+#   - 'revert_enums_and_mediumtext'
+migration_pack_dir_dest: "{{ database_root_dir }}/migration"
+migration_pack_dir_src: migration/ #relative to files
+migration_pack: []

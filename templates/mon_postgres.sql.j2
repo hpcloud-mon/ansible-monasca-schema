@@ -1,0 +1,182 @@
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+---
+-- tables
+---
+
+CREATE TABLE alarm (
+    id character varying(36) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    lifecycle_state character varying(50),
+    link character varying(512),
+    state character varying(255) NOT NULL CHECK (state in ('UNDETERMINED','OK','ALARM')),
+    state_updated_at timestamp without time zone,
+    alarm_definition_id character varying(36) NOT NULL
+);
+
+CREATE TABLE alarm_action (
+    action_id character varying(36) NOT NULL,
+    alarm_state character varying(255) NOT NULL CHECK (alarm_state in ('UNDETERMINED','OK','ALARM')),
+    alarm_definition_id character varying(36) NOT NULL
+);
+
+CREATE TABLE alarm_definition (
+    id character varying(36) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    actions_enabled boolean NOT NULL,
+    deleted_at timestamp without time zone,
+    description character varying(255),
+    expression text NOT NULL,
+    match_by character varying(255),
+    name character varying(255) NOT NULL,
+    severity character varying(255) NOT NULL CHECK (severity in ('LOW','MEDIUM','HIGH','CRITICAL')),
+    tenant_id character varying(36) NOT NULL
+);
+
+CREATE TABLE alarm_metric (
+    metric_definition_dimensions_id bytea NOT NULL,
+    alarm_id character varying(36) NOT NULL
+);
+
+CREATE TABLE metric_definition (
+    id bytea NOT NULL,
+    name character varying(255) NOT NULL,
+    region character varying(255) NOT NULL,
+    tenant_id character varying(36) NOT NULL
+);
+
+CREATE TABLE metric_definition_dimensions (
+    id bytea NOT NULL,
+    metric_definition_id bytea NOT NULL,
+    metric_dimension_set_id bytea NOT NULL
+);
+
+CREATE TABLE metric_dimension (
+    dimension_set_id bytea NOT NULL,
+    name character varying(255) NOT NULL,
+    value character varying(255) NOT NULL
+);
+
+CREATE TABLE notification_method (
+    id character varying(36) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    address character varying(512) NOT NULL,
+    name character varying(250),
+    tenant_id character varying(36) NOT NULL,
+    type character varying(255) NOT NULL CHECK (type in ('EMAIL', 'WEBHOOK', 'PAGERDUTY'))
+);
+
+CREATE TABLE sub_alarm (
+    id character varying(36) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    expression text NOT NULL,
+    alarm_id character varying(36) NOT NULL,
+    sub_expression_id character varying(36)
+);
+
+CREATE TABLE sub_alarm_definition (
+    id character varying(36) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    function character varying(10) NOT NULL,
+    metric_name character varying(100),
+    operator character varying(5) NOT NULL,
+    period integer NOT NULL,
+    periods integer NOT NULL,
+    threshold double precision NOT NULL,
+    alarm_definition_id character varying(36) NOT NULL
+);
+
+CREATE TABLE sub_alarm_definition_dimension (
+    dimension_name character varying(255) NOT NULL,
+    value character varying(255),
+    sub_alarm_definition_id character varying(36) NOT NULL
+);
+
+---
+-- primary keys
+---
+ALTER TABLE ONLY alarm_action
+    ADD CONSTRAINT alarm_action_pkey PRIMARY KEY (action_id, alarm_definition_id, alarm_state);
+
+ALTER TABLE ONLY alarm_definition
+    ADD CONSTRAINT alarm_definition_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY alarm_metric
+    ADD CONSTRAINT alarm_metric_pkey PRIMARY KEY (alarm_id, metric_definition_dimensions_id);
+
+ALTER TABLE ONLY alarm
+    ADD CONSTRAINT alarm_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY metric_definition_dimensions
+    ADD CONSTRAINT metric_definition_dimensions_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY metric_definition
+    ADD CONSTRAINT metric_definition_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY notification_method
+    ADD CONSTRAINT notification_method_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY sub_alarm_definition_dimension
+    ADD CONSTRAINT sub_alarm_definition_dimension_pkey PRIMARY KEY (dimension_name, sub_alarm_definition_id);
+
+ALTER TABLE ONLY sub_alarm_definition
+    ADD CONSTRAINT sub_alarm_definition_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY sub_alarm
+    ADD CONSTRAINT sub_alarm_pkey PRIMARY KEY (id);
+
+---
+-- indexes
+---
+
+CREATE INDEX alarm_id ON alarm_metric USING btree (alarm_id);
+CREATE INDEX deleted_at ON alarm_definition USING btree (deleted_at);
+CREATE INDEX dimension_set_id ON metric_dimension USING btree (dimension_set_id);
+CREATE INDEX metric_definition_dimensions_id ON alarm_metric USING btree (metric_definition_dimensions_id);
+CREATE INDEX metric_definition_id ON metric_definition_dimensions USING btree (metric_definition_id);
+CREATE UNIQUE INDEX metric_dimension_key ON metric_dimension USING btree (dimension_set_id, name);
+CREATE INDEX metric_dimension_set_id ON metric_definition_dimensions USING btree (metric_dimension_set_id);
+CREATE INDEX tenant_id ON alarm_definition USING btree (tenant_id);
+
+---
+-- foreign key constraints
+---
+ALTER TABLE ONLY alarm_action
+    ADD CONSTRAINT fk_8r4f64mtt15r53lt234omevtq FOREIGN KEY (alarm_definition_id) REFERENCES alarm_definition(id);
+
+ALTER TABLE ONLY sub_alarm
+    ADD CONSTRAINT fk_g1diqc91oon6e7nh8ovexw5ga FOREIGN KEY (sub_expression_id) REFERENCES sub_alarm_definition(id);
+
+ALTER TABLE ONLY alarm
+    ADD CONSTRAINT fk_i2eq5g8yrlg7aa4sqcyo8s4b5 FOREIGN KEY (alarm_definition_id) REFERENCES alarm_definition(id);
+
+ALTER TABLE ONLY sub_alarm_definition_dimension
+    ADD CONSTRAINT fk_lk5h1ss17vkn9brsu5kev4gah FOREIGN KEY (sub_alarm_definition_id) REFERENCES sub_alarm_definition(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY alarm_metric
+    ADD CONSTRAINT fk_mqt5cwmqoo6bpobw19mgcgwl8 FOREIGN KEY (alarm_id) REFERENCES alarm(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY sub_alarm_definition
+    ADD CONSTRAINT fk_o9l669oibdks34jh6w7lpslkp FOREIGN KEY (alarm_definition_id) REFERENCES alarm_definition(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY sub_alarm
+    ADD CONSTRAINT fk_rhwkt0j40qbevhhmqpwsw46xa FOREIGN KEY (alarm_id) REFERENCES alarm(id) ON DELETE CASCADE;
+
+
+---
+-- grants
+---
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;

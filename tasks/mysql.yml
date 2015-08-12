@@ -2,10 +2,9 @@
 # ©Copyright 2015 Hewlett-Packard Development Company, L.P.
 
 - name: Copy mysql schema to host
-  template: dest={{monasca_schema_file}} owner=root group=root mode=640 src=mon.sql.j2
+  template: dest={{monasca_schema_file}} owner=root group=root mode=640 src=mon_mysql.sql.j2
   register: copy_result
 
 - name: Apply mysql schema to db
   shell: mysql -u{{mysql_admin}} {% if mysql_admin_password is defined %} -p{{mysql_admin_password}} {% endif %} < {{monasca_schema_file}} || echo "Did the schema change? This process will fail on schema changes."
   when: copy_result|changed
-

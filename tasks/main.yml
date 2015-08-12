@@ -1,4 +1,6 @@
 ---
+# ©Copyright 2015 Hewlett-Packard Development Company, L.P.
+
 - include: influxdb.yml tags=influxdb_schema
   when: influxdb_schema_enabled and database_type == 'influxdb'
 - include: mysql.yml tags=mysql_schema

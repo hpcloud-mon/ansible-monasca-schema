@@ -1,4 +1,6 @@
 ---
+# ©Copyright 2015 Hewlett-Packard Development Company, L.P.
+
 - name: check topics
   shell: /opt/kafka/bin/kafka-topics.sh --list --zookeeper {{zookeeper_hosts}} --topic {{item.key}} | grep {{item.key}}
   with_dict: kafka_topics

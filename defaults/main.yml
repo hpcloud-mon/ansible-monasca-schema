@@ -1,4 +1,6 @@
 ---
+# ©Copyright 2015 Hewlett-Packard Development Company, L.P.
+
 influxdb_schema_enabled: true
 kafka_topics_enabled: true
 mysql_schema_enabled: true

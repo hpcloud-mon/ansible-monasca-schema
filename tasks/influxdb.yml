@@ -1,4 +1,5 @@
 ---
+# ©Copyright 2015 Hewlett-Packard Development Company, L.P.
 # TODO I should create a module for the db/user operations, I tried using uri and even shell with curl directly but between the j2 and yaml
 # parsing I could never get it to escape the json correctly
 

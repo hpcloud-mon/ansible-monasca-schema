@@ -1,0 +1,4 @@
+---
+- name: Create database root dir
+  file: path={{ database_root_dir }} state=directory mode=755 recurse=yes
+  when: mysql_schema_enabled or winchester_schema_enabled or postgres_schema_enabled or (migration_pack | length > 0)

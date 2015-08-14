@@ -1,6 +1,7 @@
 ---
 # ©Copyright 2015 Hewlett-Packard Development Company, L.P.
 
+- include: database_root.yml tags=migration,mysql_schema,postgres_schema,winchester_schema
 - include: influxdb.yml tags=influxdb_schema
   when: influxdb_schema_enabled and database_type == 'influxdb'
 - include: mysql.yml tags=mysql_schema

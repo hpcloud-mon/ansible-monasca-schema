@@ -1,4 +1,6 @@
 ---
+# ©Copyright 2015 Hewlett-Packard Development Company, L.P.
+
 - name: Check if database exists
   command: /opt/vertica/bin/admintools -t list_db -d {{ vertica_database_name }}
   sudo_user: dbadmin

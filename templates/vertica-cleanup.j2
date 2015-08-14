@@ -1,4 +1,6 @@
 #!/bin/sh
+# (C) Copyright 2015 Hewlett-Packard Development Company, L.P.
+
 . /etc/profile.d/vertica_node.sh
 vertica_command="/opt/vertica/bin/vsql -U dbadmin -w '{{ vertica_dbadmin_password }}' -t -c"
 

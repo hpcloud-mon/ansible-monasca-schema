@@ -1,4 +1,6 @@
 ---
+# ©Copyright 2015 Hewlett-Packard Development Company, L.P.
+
 - name: Copy mysql schema to host
   template: dest={{monasca_schema_file}} owner=root group=root mode=640 src=mon.sql.j2
   register: copy_result

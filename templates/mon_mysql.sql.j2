@@ -3,10 +3,38 @@ USE `mon`;
 
 SET foreign_key_checks = 0;
 
+/*
+ * Enum tables
+ */
+CREATE TABLE `alarm_state` (
+  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `alarm_action_state` (
+  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `alarm_definition_severity` (
+  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `notification_method_type` (
+  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `stream_actions_action_type` (
+  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `alarm` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `state` varchar(20) NOT NULL,
+  `state` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lifecycle_state` varchar(50) DEFAULT NULL,
   `link` varchar(512) DEFAULT NULL,
   `created_at` datetime NOT NULL,
@@ -14,16 +42,18 @@ CREATE TABLE `alarm` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `alarm_definition_id` (`alarm_definition_id`),
-  CONSTRAINT `fk_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_alarm_state` FOREIGN KEY (`state`) REFERENCES `alarm_state` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `alarm_action` (
   `alarm_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alarm_state` varchar(20) NOT NULL,
+  `alarm_state` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `action_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`alarm_definition_id`,`alarm_state`,`action_id`),
   CONSTRAINT `fk_alarm_action_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_alarm_action_notification_method_id` FOREIGN KEY (`action_id`) REFERENCES `notification_method` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_alarm_action_notification_method_id` FOREIGN KEY (`action_id`) REFERENCES `notification_method` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_alarm_action_state` FOREIGN KEY (`alarm_state`) REFERENCES `alarm_action_state` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `alarm_definition` (
@@ -32,7 +62,7 @@ CREATE TABLE `alarm_definition` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `expression` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `severity` varchar(20) NOT NULL,
+  `severity` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `match_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
   `actions_enabled` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` datetime NOT NULL,
@@ -40,7 +70,8 @@ CREATE TABLE `alarm_definition` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `tenant_id` (`tenant_id`),
-  KEY `deleted_at` (`deleted_at`)
+  KEY `deleted_at` (`deleted_at`),
+  CONSTRAINT `fk_alarm_definition_severity` FOREIGN KEY (`severity`) REFERENCES `alarm_definition_severity` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `alarm_metric` (
@@ -94,11 +125,12 @@ CREATE TABLE `notification_method` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(20) NOT NULL,
+  `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `address` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_alarm_noticication_method_type` FOREIGN KEY (`type`) REFERENCES `notification_method_type` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `sub_alarm_definition` (
@@ -149,13 +181,14 @@ CREATE TABLE `schema_migrations` (
 CREATE TABLE `stream_actions` (
   `stream_definition_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `action_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `action_type` varchar(20) NOT NULL,
+  `action_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`stream_definition_id`,`action_id`,`action_type`),
   KEY `stream_definition_id` (`stream_definition_id`),
   KEY `action_type` (`action_type`),
   KEY `fk_stream_action_notification_method_id` (`action_id`),
   CONSTRAINT `fk_stream_action_stream_definition_id` FOREIGN KEY (`stream_definition_id`) REFERENCES `stream_definition` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_stream_action_notification_method_id` FOREIGN KEY (`action_id`) REFERENCES `notification_method` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_stream_action_notification_method_id` FOREIGN KEY (`action_id`) REFERENCES `notification_method` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_stream_actions_action_type` FOREIGN KEY (`action_type`) REFERENCES `stream_actions_action_type` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `stream_definition` (
@@ -217,26 +250,24 @@ GRANT ALL ON mon.* TO '{{user.username}}'@'localhost' IDENTIFIED BY '{{user.pass
 
 SET foreign_key_checks = 1;
 
-{% if mysql_constraint_triggers is defined %}
-DELIMITER &&
-{% for trigger in mysql_constraint_triggers %}
-{% set tableName = trigger.when.lower() + '_' + trigger.table + '_' + trigger.action.lower() %}
+/* provide data for enum tables */
+insert into `alarm_state` values ('UNDETERMINED');
+insert into `alarm_state` values ('OK');
+insert into `alarm_state` values ('ALARM');
 
-DROP TRIGGER IF EXISTS mon.{{ tableName }}&&
-CREATE TRIGGER mon.{{ tableName }}
-{{ trigger.when }} {{ trigger.action }}
-ON `{{ trigger.table }}` FOR EACH ROW
-BEGIN
-  -- {{ trigger.when }} for table {{ trigger.table }} enforces enum constraints
-  SET @validValues = '{{ trigger.constraints }}';
-  SET @isFound = (SELECT FIND_IN_SET(new.{{ trigger.column }}, @validValues));
+insert into `alarm_action_state` values ('UNDETERMINED');
+insert into `alarm_action_state` values ('OK');
+insert into `alarm_action_state` values ('ALARM');
 
-  IF @isFound < 1 THEN
-    SET @msg = (SELECT CONCAT('check constraint failed for {{ trigger.table }}.{{ trigger.column }}, value not in ', @validValues));
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @msg;
-  END IF;
-END&&
+insert into `alarm_definition_severity` values ('LOW');
+insert into `alarm_definition_severity` values ('MEDIUM');
+insert into `alarm_definition_severity` values ('HIGH');
+insert into `alarm_definition_severity` values ('CRITICAL');
 
-{% endfor %}
-DELIMITER ;
-{% endif %}
+insert into `notification_method_type` values ('EMAIL');
+insert into `notification_method_type` values ('WEBHOOK');
+insert into `notification_method_type` values ('PAGERDUTY');
+
+insert into `stream_actions_action_type` values ('FIRE');
+insert into `stream_actions_action_type` values ('EXPIRE');
+/* provide data for enum tables */

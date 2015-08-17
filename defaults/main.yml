@@ -4,17 +4,6 @@
 influxdb_schema_enabled: true
 kafka_topics_enabled: true
 mysql_schema_enabled: true
-mysql_constraint_triggers:
-  - { table: "alarm", column: "state", when: "BEFORE", action: "INSERT", constraints: "UNDETERMINED,OK,ALARM" }
-  - { table: "alarm", column: "state", when: "BEFORE", action: "UPDATE", constraints: "UNDETERMINED,OK,ALARM" }
-  - { table: "alarm_action", column: "alarm_state", when: "BEFORE", action: "INSERT", constraints: "UNDETERMINED,OK,ALARM" }
-  - { table: "alarm_action", column: "alarm_state", when: "BEFORE", action: "UPDATE", constraints: "UNDETERMINED,OK,ALARM" }
-  - { table: "alarm_definition", column: "severity", when: "BEFORE", action: "INSERT", constraints: "LOW,MEDIUM,HIGH,CRITICAL" }
-  - { table: "alarm_definition", column: "severity", when: "BEFORE", action: "UPDATE", constraints: "LOW,MEDIUM,HIGH,CRITICAL" }
-  - { table: "notification_method", column: "type", when: "BEFORE", action: "INSERT", constraints: "EMAIL,WEBHOOK,PAGERDUTY" }
-  - { table: "notification_method", column: "type", when: "BEFORE", action: "UPDATE", constraints: "EMAIL,WEBHOOK,PAGERDUTY" }
-  - { table: "stream_actions", column: "action_type", when: "BEFORE", action: "INSERT", constraints: "FIRE,EXPIRE" }
-  - { table: "stream_actions", column: "action_type", when: "BEFORE", action: "UPDATE", constraints: "FIRE,EXPIRE" }
 postgres_schema_enabled: false
 winchester_schema_enabled: true
 influxdb_admin: root

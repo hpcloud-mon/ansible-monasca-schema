@@ -1,6 +1,7 @@
 ---
 # ©Copyright 2015 Hewlett-Packard Development Company, L.P.
 
+- include: database_root.yml tags=migration,mysql_schema,postgres_schema,winchester_schema
 - include: influxdb.yml tags=influxdb_schema
   when: influxdb_schema_enabled and database_type == 'influxdb'
 - include: mysql.yml tags=mysql_schema
@@ -11,3 +12,7 @@
   when: kafka_topics_enabled
 - include: vertica.yml tags=vertica_schema
   when: vertica_schema_enabled and database_type == 'vertica'
+- include: postgres.yml tags=postgres_schema
+  when: postgres_schema_enabled
+- include: migration.yml tags=migration
+  when: migration_pack | length > 0

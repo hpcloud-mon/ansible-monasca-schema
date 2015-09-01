@@ -1,0 +1,23 @@
+# file tasks/migration.yml
+---
+- name: Create migration directory
+  file: path="{{ migration_pack_dir_dest }}" state=directory
+  register: dir_ok
+  tags: migration
+
+- name: Copy migration pack files to host file [mysql]
+  copy: dest="{{ migration_pack_dir_dest }}" src="{{ migration_pack_dir_src }}/mysql/{{ item }}.sql"
+  when: dir_ok and mysql_schema_enabled
+  with_items: migration_pack
+  register: mysql_m_pack
+  tags:
+    - mysql
+    - migration
+
+- name: Apply migration pack to db [mysql]
+  shell: mysql -u{{ mysql_admin }} {% if mysql_admin_password is defined %} -p{{ mysql_admin_password }} {% endif %} < "{{ migration_pack_dir_dest }}/{{ item }}.sql"
+  when: mysql_m_pack | changed
+  with_items: migration_pack
+  tags:
+    - mysql
+    - migration

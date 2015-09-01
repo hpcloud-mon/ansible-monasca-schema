@@ -14,11 +14,6 @@ CREATE TABLE alarm_state (
   CONSTRAINT alarm_state_pkey PRIMARY KEY (name)
 );
 
-CREATE TABLE alarm_action_state (
-  name character varying(20) NOT NULL,
-  CONSTRAINT alarm_action_state_pkey PRIMARY KEY (name)
-);
-
 CREATE TABLE alarm_definition_severity (
   name character varying(20) NOT NULL,
   CONSTRAINT alarm_definition_severity_pkey PRIMARY KEY (name)
@@ -200,7 +195,7 @@ ALTER TABLE ONLY alarm
     ADD CONSTRAINT fk_alarm_state FOREIGN KEY (state) REFERENCES alarm_state (name);
 
 ALTER TABLE ONLY alarm_action
-    ADD CONSTRAINT fk_alarm_action_state FOREIGN KEY (alarm_state) REFERENCES alarm_action_state (name);
+    ADD CONSTRAINT fk_alarm_action_state FOREIGN KEY (alarm_state) REFERENCES alarm_state (name);
 
 ALTER TABLE ONLY alarm_definition
     ADD CONSTRAINT fk_alarm_definition_severity FOREIGN KEY (severity) REFERENCES alarm_definition_severity (name);
@@ -214,10 +209,6 @@ ALTER TABLE ONLY notification_method
 insert into alarm_state values ('UNDETERMINED');
 insert into alarm_state values ('OK');
 insert into alarm_state values ('ALARM');
-
-insert into alarm_action_state values ('UNDETERMINED');
-insert into alarm_action_state values ('OK');
-insert into alarm_action_state values ('ALARM');
 
 insert into alarm_definition_severity values ('LOW');
 insert into alarm_definition_severity values ('MEDIUM');

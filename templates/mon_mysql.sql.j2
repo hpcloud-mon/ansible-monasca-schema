@@ -11,11 +11,6 @@ CREATE TABLE `alarm_state` (
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `alarm_action_state` (
-  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE `alarm_definition_severity` (
   `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`name`)
@@ -43,7 +38,7 @@ CREATE TABLE `alarm` (
   PRIMARY KEY (`id`),
   KEY `alarm_definition_id` (`alarm_definition_id`),
   CONSTRAINT `fk_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_alarm_state` FOREIGN KEY (`state`) REFERENCES `alarm_state` (`name`)
+  CONSTRAINT `fk_alarm_alarm_state` FOREIGN KEY (`state`) REFERENCES `alarm_state` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `alarm_action` (
@@ -53,7 +48,7 @@ CREATE TABLE `alarm_action` (
   PRIMARY KEY (`alarm_definition_id`,`alarm_state`,`action_id`),
   CONSTRAINT `fk_alarm_action_alarm_definition_id` FOREIGN KEY (`alarm_definition_id`) REFERENCES `alarm_definition` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_alarm_action_notification_method_id` FOREIGN KEY (`action_id`) REFERENCES `notification_method` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_alarm_action_state` FOREIGN KEY (`alarm_state`) REFERENCES `alarm_action_state` (`name`)
+  CONSTRAINT `fk_alarm_action_alarm_state` FOREIGN KEY (`alarm_state`) REFERENCES `alarm_state` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `alarm_definition` (
@@ -254,10 +249,6 @@ SET foreign_key_checks = 1;
 insert into `alarm_state` values ('UNDETERMINED');
 insert into `alarm_state` values ('OK');
 insert into `alarm_state` values ('ALARM');
-
-insert into `alarm_action_state` values ('UNDETERMINED');
-insert into `alarm_action_state` values ('OK');
-insert into `alarm_action_state` values ('ALARM');
 
 insert into `alarm_definition_severity` values ('LOW');
 insert into `alarm_definition_severity` values ('MEDIUM');

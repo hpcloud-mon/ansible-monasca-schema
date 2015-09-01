@@ -4,11 +4,6 @@ CREATE TABLE mon.alarm_state (
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE mon.alarm_action_state (
-  name varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE mon.alarm_definition_severity (
   name varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`name`)
@@ -29,11 +24,6 @@ CREATE TABLE mon.stream_actions_action_type (
 INSERT INTO mon.alarm_state VALUES ('UNDETERMINED');
 INSERT INTO mon.alarm_state VALUES ('OK');
 INSERT INTO mon.alarm_state VALUES ('ALARM');
-
--- alarm_action_state
-INSERT INTO mon.alarm_action_state VALUES ('UNDETERMINED');
-INSERT INTO mon.alarm_action_state VALUES ('OK');
-INSERT INTO mon.alarm_action_state VALUES ('ALARM');
 
 -- alarm_definition_severity
 INSERT INTO mon.alarm_definition_severity VALUES ('LOW');
@@ -60,7 +50,7 @@ CREATE TEMPORARY TABLE mon.enum_migration_dict (
 INSERT INTO mon.enum_migration_dict VALUES ('alarm', 'alarm_state', 'state');
 INSERT INTO mon.enum_migration_dict VALUES ('alarm_definition', 'alarm_definition_severity', 'severity');
 INSERT INTO mon.enum_migration_dict VALUES ('notification_method', 'notification_method_type', 'type');
-INSERT INTO mon.enum_migration_dict VALUES ('alarm_action', 'alarm_action_state', 'alarm_state');
+INSERT INTO mon.enum_migration_dict VALUES ('alarm_action', 'alarm_state', 'alarm_state');
 INSERT INTO mon.enum_migration_dict VALUES ('stream_actions', 'stream_actions_action_type', 'action_type');
 
 DELIMITER //
@@ -87,7 +77,7 @@ CREATE PROCEDURE mon.migrate_tables()
       SET @enumTable := _enumTable;
       SET @column := _column;
 
-      -- 1. rename _column
+      -- 1. alter _column
       SET @sqlText1 := concat('alter table ', @table, ' modify column ', @column, ' varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL');
       SELECT @sqlText1 AS '1';
       PREPARE changeColStmt FROM @sqlText1;
@@ -96,7 +86,7 @@ CREATE PROCEDURE mon.migrate_tables()
       DEALLOCATE PREPARE changeColStmt;
 
       -- 2. add foreign key index
-      SET @sqlText2 := concat('alter table ', @table, ' add constraint fk_', @enumTable, ' foreign key (', @column, ') references ', @enumTable, ' (name)');
+      SET @sqlText2 := concat('alter table ', @table, ' add constraint fk_', @enumTable, '_', @table, ' foreign key (', @column, ') references ', @enumTable, ' (name)');
       SELECT @sqlText2 AS '2';
       PREPARE fkStmt FROM @sqlText2;
       EXECUTE fkStmt;
@@ -110,7 +100,6 @@ CREATE PROCEDURE mon.migrate_tables()
   END//
 
 DELIMITER ;
-
 
 SET foreign_key_checks = 0;
 CALL mon.migrate_tables();

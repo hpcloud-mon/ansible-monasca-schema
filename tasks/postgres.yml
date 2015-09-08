@@ -2,7 +2,7 @@
 - name: Create database
   sudo_user: postgres
   postgresql_db: name="{{ database_name }}"
-                 encoding="UTF8"
+                 encoding="{{ postgres_encoding }}"
 
 - name: Copy postgres schema to host
   template: dest={{monasca_schema_file}} owner=postgres group=postgres mode=640 src=mon_postgres.sql.j2

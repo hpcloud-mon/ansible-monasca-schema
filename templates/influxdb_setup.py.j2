@@ -69,7 +69,12 @@ def main(argv=None):
 
 #   Check retention policy
     policies = influxdb_get(uri=api_uri,
+{% if influxdb_version is defined and influxdb_version >= "0.9.2" %}
+                            query="SHOW RETENTION POLICIES ON {0}".format(DBNAME))
+{% else %}
                             query="SHOW RETENTION POLICIES {0}".format(DBNAME))
+{% endif %}
+
     if not any(pol[0] == SHARDSPACE_NAME for pol in policies):
         # Set retention policy
         policy = "CREATE RETENTION POLICY {0} ON {1} DURATION {2} REPLICATION {3} DEFAULT".format(SHARDSPACE_NAME,

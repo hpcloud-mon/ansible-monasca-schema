@@ -1,0 +1,92 @@
+CREATE KEYSPACE IF NOT EXISTS mon WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
+
+CREATE TABLE IF NOT EXISTS mon.metrics_name_only (
+    tenant_id text,
+    region text,
+    name text,
+    dimensions set<text>,
+    PRIMARY KEY ((tenant_id, region), name)
+) WITH CLUSTERING ORDER BY (name ASC);
+CREATE INDEX IF NOT EXISTS metrics_name_only_dimensions_idx ON mon.metrics_name_only (dimensions);
+
+CREATE TABLE IF NOT EXISTS mon.alarm_state_hists (
+    tenant_id text,
+    alarm_id text,
+    time timeuuid,
+    dimensions set<text>,
+    metrics text,
+    new_state text,
+    old_state text,
+    reason text,
+    reason_data text,
+    sub_alarms text,
+    PRIMARY KEY ((tenant_id, alarm_id), time)
+) WITH CLUSTERING ORDER BY (time ASC);
+
+CREATE TABLE IF NOT EXISTS mon.metrics_dim (
+    tenant_id text,
+    region text,
+    key_dim text,
+    name_dims text,
+    dimensions set<text>,
+    PRIMARY KEY ((tenant_id, region, key_dim), name_dims)
+) WITH CLUSTERING ORDER BY (name_dims ASC);
+CREATE INDEX IF NOT EXISTS metrics_dim_dimensions_idx ON mon.metrics_dim (dimensions);
+
+CREATE TABLE IF NOT EXISTS mon.metrics_all (
+    tenant_id text,
+    region text,
+    name text,
+    dims_str text,
+    dimensions set<text>,
+    PRIMARY KEY ((tenant_id, region), name, dims_str)
+) WITH CLUSTERING ORDER BY (name ASC, dims_str ASC);
+CREATE INDEX IF NOT EXISTS metrics_all_dimensions_idx ON mon.metrics_all (dimensions);
+
+CREATE TABLE IF NOT EXISTS mon.measurements_dim (
+    tenant_id text,
+    region text,
+    name text,
+    dims_str text,
+    time timeuuid,
+    value double,
+    value_meta text,
+    PRIMARY KEY ((tenant_id, region, name), dims_str, time)
+) WITH CLUSTERING ORDER BY (dims_str ASC, time ASC);
+
+CREATE TABLE IF NOT EXISTS mon.measurements_time (
+    tenant_id text,
+    region text,
+    name text,
+    time timeuuid,
+    dims_str text,
+    value double,
+    value_meta text,
+    PRIMARY KEY ((tenant_id, region, name), time)
+) WITH CLUSTERING ORDER BY (time ASC);
+CREATE INDEX IF NOT EXISTS measurements_time_dims_str_idx ON mon.measurements_time (dims_str);
+
+CREATE TABLE IF NOT EXISTS mon.metrics_name (
+    tenant_id text,
+    region text,
+    name text,
+    dims_str text,
+    dimensions set<text>,
+    PRIMARY KEY ((tenant_id, region, name), dims_str)
+) WITH CLUSTERING ORDER BY (dims_str ASC);
+CREATE INDEX IF NOT EXISTS metrics_name_dimensions_idx ON mon.metrics_name (dimensions);
+
+CREATE TABLE IF NOT EXISTS mon.alarm_state_hists_mult (
+    tenant_id text,
+    date int,
+    alarm_id text,
+    time timeuuid,
+    dimensions set<text>,
+    metrics text,
+    new_state text,
+    old_state text,
+    reason text,
+    reason_data text,
+    sub_alarms text,
+    PRIMARY KEY ((tenant_id, date), alarm_id, time)
+) WITH CLUSTERING ORDER BY (alarm_id ASC, time ASC);

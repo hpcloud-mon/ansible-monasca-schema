@@ -1,0 +1,11 @@
+---
+# ©Copyright 2015 Hewlett-Packard Development Company, L.P.
+
+- name: Copy Cassandra schema to host
+  template: dest={{monasca_cassandra_schema_file}} owner=root group=root mode=640 src=mon_cassandra.cql.j2
+  register: copy_result
+
+- name: Apply Cassandra schema to db
+  command: /usr/bin/cqlsh {{mini_mon}} -f {{monasca_cassandra_schema_file}}
+  when: copy_result|changed
+

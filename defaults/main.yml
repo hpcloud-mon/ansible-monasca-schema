@@ -2,6 +2,7 @@
 # ©Copyright 2015 Hewlett-Packard Development Company, L.P.
 
 influxdb_schema_enabled: true
+cassandra_schema_enabled: true
 kafka_topics_enabled: true
 mysql_schema_enabled: true
 postgres_schema_enabled: false
@@ -28,6 +29,7 @@ database_root_dir: /opt/monasca/sqls
 database_users: {}
 
 monasca_schema_file: "{{database_root_dir}}/mon.sql"
+monasca_cassandra_schema_file: "{{database_root_dir}}/mon.cql"
 winchester_schema_file: "{{database_root_dir}}/winchester.sql"
 
 kafka_events_partitions: 12

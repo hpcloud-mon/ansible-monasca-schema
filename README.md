@@ -1,16 +1,17 @@
 #Monasca-Schema
-Adds schema to mysql and influxdb, creates db users and creates kafka topics.
+Adds schema to mysql and influxdb or cassandra, creates db users and creates kafka topics.
 
 ## Tags
 These tags can be used to specify just sections of the role
 - kafka_topics
 - mysql_schema
 - influxdb_schema
+- cassandra_schema
 - winchester_schema
 - migration
 
 ##Requirements
-The monasca services for mysql, influxdb and kafka must be up and running. Influxdb must be version 0.9+.
+The monasca services for mysql, influxdb or cassandra, and kafka must be up and running. Influxdb must be version 0.9+.
 - zookeeper_hosts - comma separated list of host:port pairs.
 - influxdb_url - URL of the influxdb server
 - mon_influxdb_users - dictionary of user/password pairs
